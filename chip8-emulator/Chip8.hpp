@@ -8,8 +8,6 @@ const unsigned int VIDEO_HEIGHT = 32;
 const unsigned int VIDEO_WEIGHT = 64;
 const unsigned int KEY_COUNT = 16;
 
-const unsigned int START_ADDRESS = 0x200;
-
 class Chip8 {
 public:
 
@@ -27,5 +25,5 @@ public:
 	uint8_t soundTimer{};
 	uint8_t keypad[KEY_COUNT]{};
 	uint32_t video[VIDEO_HEIGHT * VIDEO_WEIGHT]{};
-	uint16_t opcode;
+	uint16_t opcode{};
 };
