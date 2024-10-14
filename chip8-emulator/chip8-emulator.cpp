@@ -1,9 +1,7 @@
 ﻿#include <iostream>
+#include "Chip8.hpp"
 
-using namespace std;
+int main() {
 
-int main()
-{
-	cout << "Hello CMake." << endl;
 	return 0;
 }
