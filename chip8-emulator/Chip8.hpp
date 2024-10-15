@@ -48,6 +48,14 @@ public:
 	// ADD 7xkk Vx, byte
 	void OP_7xkk();
 
+	// LD 8xy0 Vx, Vy
+	void OP_8xy0();
+
+	// OR 8xy1 Vx, Vy
+	void OP_8xy1();
+
+	// AND 8xy2 Vx, Vy
+	void OP_8xy2();
 
 	std::default_random_engine randGen;
 	std::uniform_int_distribution<int> randByte;

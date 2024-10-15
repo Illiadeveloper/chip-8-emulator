@@ -186,3 +186,62 @@ void Chip8::OP_7xkk()
 	registers[Vx] += kk;
 }
 
+// LD 8xy0 Vx, Vy
+void Chip8::OP_8xy0()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy0: LD Vx" << std::hex << (int)Vx << " = " << std::hex << (int)Vy << std::endl;
+#endif 
+
+	registers[Vx] = registers[Vy];
+}
+
+// OR 8xy1 Vx, Vy
+void Chip8::OP_8xy1()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+#ifdef DEBUG_CHIP
+	uint8_t prevVx = registers[Vx];
+	uint8_t prevVy = registers[Vy]; 
+#endif
+
+	registers[Vx] |= registers[Vy];
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy1:\n";
+	std::cout << "    Before OR: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx
+		<< ", Vy(" << std::hex << +Vy << ") = 0x" << std::hex << +prevVy << "\n";
+	std::cout << "    After OR:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx]
+		<< " (Vx | Vy)\n";
+#endif
+}
+
+
+// AND 8xy2 Vx, Vy
+void Chip8::OP_8xy2()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+#ifdef DEBUG_CHIP
+	uint8_t prevVx = registers[Vx];
+	uint8_t prevVy = registers[Vy];
+#endif
+
+	registers[Vx] &= registers[Vy];
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy1:\n";
+	std::cout << "    Before AND: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx
+		<< ", Vy(" << std::hex << +Vy << ") = 0x" << std::hex << +prevVy << "\n";
+	std::cout << "    After AND:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx]
+		<< " (Vx | Vy)\n";
+#endif
+
+}
+
