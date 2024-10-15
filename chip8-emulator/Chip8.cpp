@@ -236,12 +236,95 @@ void Chip8::OP_8xy2()
 	registers[Vx] &= registers[Vy];
 
 #ifdef DEBUG_CHIP
-	std::cout << "[DEBUG] OP_8xy1:\n";
+	std::cout << "[DEBUG] OP_8xy2:\n";
 	std::cout << "    Before AND: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx
 		<< ", Vy(" << std::hex << +Vy << ") = 0x" << std::hex << +prevVy << "\n";
 	std::cout << "    After AND:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx]
 		<< " (Vx | Vy)\n";
 #endif
 
+}
+
+// XOR 8xy3 Vx, Vy
+void Chip8::OP_8xy3()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+#ifdef DEBUG_CHIP
+	uint8_t prevVx = registers[Vx];
+	uint8_t prevVy = registers[Vy];
+#endif
+
+	registers[Vx] ^= registers[Vy];
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy3:\n";
+	std::cout << "    Before XOR: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx
+		<< ", Vy(" << std::hex << +Vy << ") = 0x" << std::hex << +prevVy << "\n";
+	std::cout << "    After XOR:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx]
+		<< " (Vx | Vy)\n";
+#endif
+}
+
+// ADD 8xy4 Vx, Vy
+void Chip8::OP_8xy4()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+#ifdef DEBUG_CHIP
+	uint8_t prevVx = registers[Vx];
+	uint8_t prevVy = registers[Vy];
+#endif
+
+	uint16_t sum = registers[Vx] + registers[Vy];
+
+	if (sum > 255U) {
+		registers[0xF] = 1;
+	}
+	else {
+		registers[0xF] = 0;
+	}
+
+	registers[Vx] = sum & 0xFFu;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy4:\n";
+	std::cout << "    Before ADD: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx
+		<< ", Vy(" << std::hex << +Vy << ") = 0x" << std::hex << +prevVy << "\n";
+	std::cout << "    After ADD:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx]
+		<< " (Vx | Vy)\n";
+#endif
+}
+
+// SUB 8xy5 Vx, Vy
+void Chip8::OP_8xy5()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+#ifdef DEBUG_CHIP
+	uint8_t prevVx = registers[Vx];
+	uint8_t prevVy = registers[Vy];
+#endif
+
+	if (registers[Vx] > registers[Vy]) {
+		registers[0xF] = 1;
+	}
+	else 
+	{
+		registers[0xF] = 0;
+	}
+
+	registers[Vx] -= registers[Vy];
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy5:\n";
+	std::cout << "    Before SUB: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx
+		<< ", Vy(" << std::hex << +Vy << ") = 0x" << std::hex << +prevVy << "\n";
+	std::cout << "    After SUB:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx]
+		<< " (Vx | Vy)\n";
+#endif
 }
 
