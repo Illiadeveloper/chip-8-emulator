@@ -328,3 +328,73 @@ void Chip8::OP_8xy5()
 #endif
 }
 
+// SHR 8xy6 Vx {, Vy}
+void Chip8::OP_8xy6()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+#ifdef DEBUG_CHIP
+	uint8_t prevVx = registers[Vx];
+#endif
+
+	registers[0xF] = (registers[Vx] & 0x1u);
+
+	registers[Vx] >>= 1;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy6:\n";
+	std::cout << "    Before SHR: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx << std::endl;
+	std::cout << "    After SHR:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx] << "\n";
+#endif
+}
+
+// SUBN Vx Vy
+void Chip8::OP_8xy7()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+#ifdef DEBUG_CHIP
+	uint8_t prevVx = registers[Vx];
+	uint8_t prevVy = registers[Vy];
+#endif
+
+	if (registers[Vy] > registers[Vx]) {
+		registers[0xF] = 1;
+	}
+	else {
+		registers[0xF] = 0;
+	}
+
+	registers[Vx] = registers[Vy] - registers[Vx];
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy7:\n";
+	std::cout << "    Before SUBN: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx
+		<< ", Vy(" << std::hex << +Vy << ") = 0x" << std::hex << +prevVy << "\n";
+	std::cout << "    After SUBN:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx]
+		<< " (Vx | Vy)\n";
+#endif
+
+}
+
+// SHL Vx {, Vy}
+void Chip8::OP_8xy9()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+#ifdef DEBUG_CHIP
+	uint8_t prevVx = registers[Vx];
+#endif
+
+	registers[0xF] = (registers[Vx] & 0x80u) >> 7u;
+
+	registers[Vx] <<= 1;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_8xy9:\n";
+	std::cout << "    Before SHL: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx << std::endl;
+	std::cout << "    After SHL:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx] << "\n";
+#endif
+}
+

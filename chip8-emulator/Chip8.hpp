@@ -66,6 +66,14 @@ public:
 	// SUB 8xy5 Vx, Vy
 	void OP_8xy5();
 
+	// SHR 8xy6 Vx {, Vy}
+	void OP_8xy6();
+
+	// SUBN Vx Vy
+	void OP_8xy7();
+
+	// SHL Vx {, Vy}
+	void OP_8xy9();
 
 	std::default_random_engine randGen;
 	std::uniform_int_distribution<int> randByte;
