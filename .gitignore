@@ -2,6 +2,9 @@
 .vs/
 out/
 
+# Chip
+*.ch8
+
 # Prerequisites
 *.d
 

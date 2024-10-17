@@ -1,9 +1,17 @@
 #include <cstdint>
 #include <fstream>
 #include <random>
+#include <iostream>
 #include <chrono>
 
+#pragma once
+
 #define DEBUG_CHIP = true
+
+#define YELLOW "\033[33m"
+#define GREEN "\033[32m"
+#define RED "\033[31m"
+#define RESET "\033[0m"
 
 const unsigned int MEMORY_SIZE = 4096;
 const unsigned int STACK_LEVEL = 16;
@@ -17,12 +25,17 @@ public:
 
 	Chip8();
 
+	void Cycle();
+
 	void LoadROM(const char* filename);
 
-public:
+private:
+
+	void Table0();
+	void Table8();
 
 	// CLS
-	void OP_OOEO();
+	void OP_00E0();
 
 	// RET
 	void OP_00EE();
@@ -75,6 +88,8 @@ public:
 	// SHL Vx {, Vy}
 	void OP_8xy9();
 
+
+
 	std::default_random_engine randGen;
 	std::uniform_int_distribution<int> randByte;
 
@@ -90,4 +105,9 @@ public:
 	uint8_t keypad[KEY_COUNT]{};
 	uint32_t video[VIDEO_HEIGHT * VIDEO_WEIGHT]{};
 	uint16_t opcode{};
+
+	typedef void (Chip8::* ChipFunc)();
+	ChipFunc table[0xF + 1];
+	ChipFunc table0[0xE + 1];
+	ChipFunc table8[0xE + 1];
 };

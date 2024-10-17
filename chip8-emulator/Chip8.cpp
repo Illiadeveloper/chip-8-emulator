@@ -1,4 +1,5 @@
 #include "Chip8.hpp"
+#pragma once
 
 const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_SIZE = 80;
@@ -30,8 +31,69 @@ Chip8::Chip8() : randGen(std::chrono::system_clock::now().time_since_epoch().cou
 		memory[FONTSET_START_ADDRESS + i] = fontset[i];
 	}
 
+	table[0x0] = &Chip8::Table0;
+	table[0x1] = &Chip8::OP_1nnn;
+	table[0x2] = &Chip8::OP_2nnn;
+	table[0x3] = &Chip8::OP_3xkk;
+	table[0x4] = &Chip8::OP_4xkk;
+	table[0x5] = &Chip8::OP_5xy0;
+	table[0x6] = &Chip8::OP_6xkk;
+	table[0x7] = &Chip8::OP_7xkk;
+	table[0x8] = &Chip8::Table8;
+
+	table0[0x0] = &Chip8::OP_00E0;
+	table0[0x1] = &Chip8::OP_00EE;
+
+
 	randByte = std::uniform_int_distribution<int>(0, 255U);
 }
+
+void Chip8::Cycle()
+{
+	// Fetch
+	opcode = (memory[pc] << 8u) | memory[pc + 1];
+
+#ifdef DEBUG_CHIP
+	std::cout << YELLOW << "[DEBUG] Fetched opcode: 0x" << std::hex << opcode << RESET << std::endl;
+	std::cout << YELLOW << "[DEBUG] Program counter (PC) before execution: 0x" << std::hex << pc << RESET << std::endl;
+#endif
+
+	// Increment the PC before we execute anything
+	pc += 2;
+
+#ifdef DEBUG_CHIP
+	std::cout << YELLOW << "[DEBUG] Program counter (PC) after increment: 0x" << std::hex << pc << RESET << std::endl;
+	std::cout << YELLOW << "[DEBUG] Executing function from table with index: " << std::dec << ((opcode & 0xF000) >> 12u) << RESET << "\n\n";
+#endif
+
+	// Decode and Execute
+	((*this).*(table[(opcode & 0xF000) >> 12u]))();
+
+#ifdef DEBUG_CHIP
+	std::cout << GREEN << "\n[DEBUG] Opcode 0x" << std::hex << opcode << " executed successfully. \n" << RESET << std::endl;
+#endif
+
+	// Decrement the delay timer if it's been set
+	if (delayTimer > 0)
+	{
+		--delayTimer;
+
+#ifdef DEBUG_CHIP
+		std::cout << "[DEBUG] Delay timer decreased to: " << std::dec << static_cast<int>(delayTimer) << std::endl;
+#endif
+	}
+
+	// Decrement the sound timer if it's been set
+	if (soundTimer > 0)
+	{
+		--soundTimer;
+
+#ifdef DEBUG_CHIP
+		std::cout << "[DEBUG] Sound timer decreased to: " << std::dec << static_cast<int>(soundTimer) << std::endl;
+#endif
+	}
+}
+
 
 void Chip8::LoadROM(const char* filename)
 {
@@ -52,10 +114,28 @@ void Chip8::LoadROM(const char* filename)
 	}
 }
 
-#include <iostream>
+void Chip8::Table0()
+{
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] Opcode: 0x" << std::hex << opcode << std::endl;
+	std::cout << "[DEBUG] Calling function at table0 index: " << std::dec << (opcode & 0x000F) << std::endl;
+#endif
+
+	((*this).*(table0[opcode & 0x000Fu]))();
+}
+
+void Chip8::Table8()
+{
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] Opcode: 0x" << std::hex << opcode << std::endl;
+	std::cout << "[DEBUG] Calling function at table8 index: " << std::dec << (opcode & 0x000F) << std::endl;
+#endif
+
+	((*this).*(table8[opcode & 0x000Fu]))();
+}
 
 // CLS
-void Chip8::OP_OOEO()
+void Chip8::OP_00E0()
 {
 	memset(video, 0, sizeof(video));
 
