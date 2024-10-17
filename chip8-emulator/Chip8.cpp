@@ -459,7 +459,7 @@ void Chip8::OP_8xy7()
 }
 
 // SHL Vx {, Vy}
-void Chip8::OP_8xy9()
+void Chip8::OP_8xyE()
 {
 	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
 
@@ -475,6 +475,82 @@ void Chip8::OP_8xy9()
 	std::cout << "[DEBUG] OP_8xy9:\n";
 	std::cout << "    Before SHL: Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +prevVx << std::endl;
 	std::cout << "    After SHL:  Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx] << "\n";
+#endif
+}
+
+// SNE Vx, Vy
+void Chip8::OP_9xy0()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_9xy0 (SNE):\n";
+	std::cout << "    Vx(" << std::hex << +Vx << ") = 0x" << std::hex << +registers[Vx]
+		<< ", Vy(" << std::hex << +Vy << ") = 0x" << std::hex << +registers[Vy] << "\n";
+#endif
+
+	if (registers[Vx] != registers[Vy]) {
+		pc += 2;
+
+#ifdef DEBUG_CHIP
+		std::cout << "[DEBUG] Condition met (Vx != Vy). Program counter (PC) increased to: 0x"
+			<< std::hex << pc << std::endl;
+#endif
+	}
+}
+
+// LD I, addr
+void Chip8::OP_Annn()
+{
+	uint16_t address = opcode & 0x0FFFu;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_Annn (LD I, addr):\n";
+	std::cout << "    Loading address: 0x" << std::hex << address << " into index register (I)\n";
+#endif
+
+	index = address;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] Index register (I) set to: 0x" << std::hex << index << std::endl;
+#endif
+}
+
+// JP V0, addr
+void Chip8::OP_Bnnn()
+{
+	uint16_t address = opcode & 0x0FFFu;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_Bnnn (JP V0, addr):\n";
+	std::cout << "    Jumping to address: 0x" << std::hex << address
+		<< " + V0 (0x" << std::hex << +registers[0] << ")\n";
+#endif
+
+	pc = registers[0] + address;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] Program counter (PC) set to: 0x" << std::hex << pc << std::endl;
+#endif
+}
+
+// RND Vx, byte
+void Chip8::OP_Cxkk()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t byte = opcode & 0x0FFu;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] OP_Cxkk (RND Vx, byte):\n";
+	std::cout << "    Byte mask applied: 0x" << std::hex << +byte << "\n";
+	std::cout << "    Storing result into Vx(" << std::hex << +Vx << ")\n";
+#endif
+
+	registers[Vx] = randByte(randGen) & byte;
+
+#ifdef DEBUG_CHIP
+	std::cout << "[DEBUG] Vx(" << std::hex << +Vx << ") set to: 0x" << std::hex << +registers[Vx] << std::endl;
 #endif
 }
 

@@ -86,7 +86,43 @@ private:
 	void OP_8xy7();
 
 	// SHL Vx {, Vy}
-	void OP_8xy9();
+	void OP_8xyE();
+
+	// SNE Vx, Vy
+	void OP_9xy0();
+
+	// LD I, addr
+	void OP_Annn();
+
+	// JP V0, addr
+	void OP_Bnnn();
+
+	// RND Vx, byte
+	void OP_Cxkk();
+
+	void OP_Dxyn();
+
+	void OP_Ex9E();
+
+	void OP_ExA1();
+
+	void OP_Fx07();
+
+	void OP_Fx0A();
+
+	void OP_Fx15();
+
+	void OP_Fx18();
+
+	void OP_Fx1E();
+
+	void OP_Fx29();
+
+	void OP_Fx33();
+
+	void OP_Fx55();
+
+	void OP_Fx65();
 
 
 
