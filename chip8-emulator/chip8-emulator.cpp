@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 
 	int videoScale = std::stoi(argv[1]);
 	int cycleDelay = std::stoi(argv[2]);
-	int cycleDelay = std::stoi(argv[3]);
+	int soundDelay = std::stoi(argv[3]);
 	const char* romFileName = argv[4];
 
 	Chip8 chip8;

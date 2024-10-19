@@ -100,6 +100,7 @@ private:
 	// RND Vx, byte
 	void OP_Cxkk();
 
+	// DRW Vx, Vy, nibble
 	void OP_Dxyn();
 
 	void OP_Ex9E();
