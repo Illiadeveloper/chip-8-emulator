@@ -8,10 +8,10 @@ int main(int argc, char* argv[]) {
 		std::exit(EXIT_FAILURE);
 	}
 
-	int videoScale = std::stoi(argv[1]);
-	int cycleDelay = std::stoi(argv[2]);
-	int soundDelay = std::stoi(argv[3]);
-	const char* romFileName = argv[4];
+	int videoScale = 8;
+	int cycleDelay = 1;
+	int soundDelay = 1;
+	const char* romFileName = "test_opcode.ch8";
 
 	Chip8 chip8;
 

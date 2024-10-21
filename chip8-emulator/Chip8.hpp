@@ -6,7 +6,7 @@
 
 #pragma once
 
-#define DEBUG_CHIP = true
+#define DEBUG_CHIP false
 
 #define YELLOW "\033[33m"
 #define GREEN "\033[32m"
@@ -33,6 +33,11 @@ private:
 
 	void Table0();
 	void Table8();
+	void TableE();
+	void TableF();
+
+	// Do nothing
+	void OP_NULL();
 
 	// CLS
 	void OP_00E0();
@@ -103,26 +108,37 @@ private:
 	// DRW Vx, Vy, nibble
 	void OP_Dxyn();
 
+	// SKP Vx
 	void OP_Ex9E();
 
+	// SKNP Vx
 	void OP_ExA1();
 
+	// LD Vx, DT
 	void OP_Fx07();
 
+	// LD Vx, k
 	void OP_Fx0A();
-
+	
+	// LD DT, Vx
 	void OP_Fx15();
 
+	// LD ST, Vx
 	void OP_Fx18();
 
+	// ADD I, Vx
 	void OP_Fx1E();
 
+	// LD F, Vx
 	void OP_Fx29();
 
+	// LD B, Vx
 	void OP_Fx33();
 
+	// LD [I], Vx
 	void OP_Fx55();
 
+	// LD Vx, [I]
 	void OP_Fx65();
 
 
@@ -147,4 +163,6 @@ private:
 	ChipFunc table[0xF + 1];
 	ChipFunc table0[0xE + 1];
 	ChipFunc table8[0xE + 1];
+	ChipFunc tableE[0xE + 1];
+	ChipFunc tableF[0x65 + 1];
 };
