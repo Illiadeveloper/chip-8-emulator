@@ -27,7 +27,7 @@ uint8_t fontset[FONTSET_SIZE] = {
 Chip8::Chip8() : randGen(std::chrono::system_clock::now().time_since_epoch().count())
 {
 	pc = START_ADDRESS;
-	for (size_t i = 0; i < FONTSET_SIZE; ++i) {
+	for (unsigned int i = 0; i < FONTSET_SIZE; ++i) {
 		memory[FONTSET_START_ADDRESS + i] = fontset[i];
 	}
 
@@ -48,14 +48,14 @@ Chip8::Chip8() : randGen(std::chrono::system_clock::now().time_since_epoch().cou
 	table[0xE] = &Chip8::TableE;
 	table[0xF] = &Chip8::TableF;
 
-	for (size_t i = 0; i < 0xF; ++i) {
+	for (size_t i = 0; i <= 0xE; i++) {
 		table0[i] = &Chip8::OP_NULL;
 		table8[i] = &Chip8::OP_NULL;
 		tableE[i] = &Chip8::OP_NULL;
 	}
 
 	table0[0x0] = &Chip8::OP_00E0;
-	table0[0x1] = &Chip8::OP_00EE;
+	table0[0xE] = &Chip8::OP_00EE;
 
 	table8[0x0] = &Chip8::OP_8xy0;
 	table8[0x1] = &Chip8::OP_8xy1;
@@ -65,12 +65,13 @@ Chip8::Chip8() : randGen(std::chrono::system_clock::now().time_since_epoch().cou
 	table8[0x5] = &Chip8::OP_8xy5;
 	table8[0x6] = &Chip8::OP_8xy6;
 	table8[0x7] = &Chip8::OP_8xy7;
-	table8[0x8] = &Chip8::OP_8xyE;
+	table8[0xE] = &Chip8::OP_8xyE;
 
 	tableE[0x1] = &Chip8::OP_ExA1;
 	tableE[0xE] = &Chip8::OP_Ex9E;
 
-	for (size_t i = 0; i < 0x65; ++i) {
+	for (size_t i = 0; i <= 0x65; ++i) 
+	{
 		tableF[i] = &Chip8::OP_NULL;
 	}
 
@@ -103,7 +104,7 @@ void Chip8::Cycle()
 	std::cout << YELLOW << "[DEBUG] Executing function from table with index: " << std::dec << ((opcode & 0xF000) >> 12u) << RESET << "\n\n";
 #endif
 
-	((*this).*(table[(opcode & 0xF000) >> 12u]))();
+	((*this).*(table[(opcode & 0xF000u) >> 12u]))();
 
 #ifdef DEBUG_CHIP
 	std::cout << GREEN << "\n[DEBUG] Opcode 0x" << std::hex << opcode << " executed successfully. \n" << RESET << std::endl;
@@ -188,9 +189,7 @@ void Chip8::TableF()
 	((*this).*(tableF[opcode & 0x00FFu]))();
 }
 
-void Chip8::OP_NULL() {
-	return;
-}
+void Chip8::OP_NULL() {}
 
 // CLS
 void Chip8::OP_00E0()
@@ -218,7 +217,8 @@ void Chip8::OP_00EE()
 // JP 1nnn addr
 void Chip8::OP_1nnn()
 {
-	pc = opcode & 0x0FFFu;
+	uint16_t address = opcode & 0x0FFFu;
+	pc = address;
 
 #ifdef DEBUG_CHIP
 	std::cout << "[DEBUG] OP_1nnn: Jumping to address " << std::hex << pc << std::endl;
@@ -237,7 +237,7 @@ void Chip8::OP_2nnn()
 #endif
 
 	stack[sp] = pc;
-	sp++;
+	++sp;
 	pc = address;
 
 #ifdef DEBUG_CHIP
@@ -302,7 +302,7 @@ void Chip8::OP_5xy0()
 void Chip8::OP_6xkk()
 {
 	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
-	uint8_t kk = (opcode & 0x00FFu);
+	uint8_t kk = opcode & 0x00FFu;
 
 #ifdef DEBUG_CHIP
 	std::cout << "[DEBUG] OP_6xkk: LD Vx" << std::hex << (int)Vx << " = " << std::hex << (int)kk << std::endl;
@@ -315,7 +315,7 @@ void Chip8::OP_6xkk()
 void Chip8::OP_7xkk()
 {
 	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
-	uint8_t kk = (opcode & 0x00FFu);
+	uint8_t kk = opcode & 0x00FFu;
 
 #ifdef DEBUG_CHIP
 	std::cout << "[DEBUG] OP_7xkk: ADD Vx" << std::hex << (int)Vx << " += " << std::hex << (int)kk << std::endl;
@@ -597,7 +597,7 @@ void Chip8::OP_Bnnn()
 void Chip8::OP_Cxkk()
 {
 	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
-	uint8_t byte = opcode & 0x0FFu;
+	uint8_t byte = opcode & 0x00FFu;
 
 #ifdef DEBUG_CHIP
 	std::cout << "[DEBUG] OP_Cxkk (RND Vx, byte):\n";
@@ -629,13 +629,13 @@ void Chip8::OP_Dxyn()
 
 	registers[0xF] = 0;
 
-	for (unsigned int row = 1; row < height; ++row) {
+	for (unsigned int row = 0; row < height; ++row) {
 		uint8_t spriteByte = memory[index + row];
 		for (unsigned int col = 0; col < 8; ++col) {
 			uint8_t spritePixel = spriteByte & (0x80u >> col);
 			uint32_t* screenPixel = &video[(yPos + row) * VIDEO_WEIGHT + (xPos + col)];
 
-			if (spriteByte) {
+			if (spritePixel) {
 				if (*screenPixel == 0xFFFFFFFF) {
 					registers[0xF] = 1;
 				}
@@ -800,7 +800,7 @@ void Chip8::OP_Fx1E()
 	std::cout << "[DEBUG] OP_Fx1E (ADD I, Vx): Adding Vx(" << (int)Vx << ") to index\n";
 #endif
 
-	index = index + registers[Vx];
+	index += registers[Vx];
 
 #ifdef DEBUG_CHIP
 	std::cout << "[DEBUG] Index set to: 0x" << std::hex << +index << "\n";

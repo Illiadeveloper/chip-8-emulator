@@ -6,7 +6,7 @@
 
 #pragma once
 
-#define DEBUG_CHIP false
+//#define DEBUG_CHIP
 
 #define YELLOW "\033[33m"
 #define GREEN "\033[32m"
@@ -29,6 +29,8 @@ public:
 
 	void LoadROM(const char* filename);
 
+	uint8_t keypad[KEY_COUNT]{};
+	uint32_t video[VIDEO_HEIGHT * VIDEO_WEIGHT]{};
 private:
 
 	void Table0();
@@ -155,8 +157,6 @@ private:
 	uint8_t sp{};
 	uint8_t delayTimer{};
 	uint8_t soundTimer{};
-	uint8_t keypad[KEY_COUNT]{};
-	uint32_t video[VIDEO_HEIGHT * VIDEO_WEIGHT]{};
 	uint16_t opcode{};
 
 	typedef void (Chip8::* ChipFunc)();
